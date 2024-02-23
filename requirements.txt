@@ -1,0 +1,12 @@
+streamlit
+PIL
+requests
+matplotlib.pyplot
+torch.nn
+pylab
+matplotlib
+numpy
+torch
+cv2
+pandas
+os

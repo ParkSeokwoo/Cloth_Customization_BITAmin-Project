@@ -1,7 +1,7 @@
 # BITAmin project #01. Recommendation System
 
 - 분야: 추천시스템, CV
-- 주제: 입력한 옷과 TPO를 고려한 의류추천
+- 주제: 입력한 옷과 TPO를 고려한 의류추천
 - 참여조원: 배성윤, 서은서, 황석우, 김재겸
 
 ---

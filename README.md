@@ -24,6 +24,14 @@
 
 <img width="1000" alt="process" src="https://github.com/baesunny/cloth_customization/assets/133308712/b1b4a776-ac34-422a-b317-fdbf45a6d553">
 
+1. 온더룩, 무신사 사이트에서 데이터 크롤링 (상품, 스타일)
+2. 이미지 Segmentation (Pre-trained 모델 4가지 중 최종 선정모델: Segformer)
+3. Object Detection & Cropping
+4. 전처리 완료된 이미지 벡터화
+5. 파일명 통일 후 폴더별 저장
+6. 이미지 유사도 분석
+7. streamlit 앱 구현
+
 ---
 
 결과물은 streamlit 앱으로 구현하였으며, 구현 영상은 아래에 첨부해두었다.

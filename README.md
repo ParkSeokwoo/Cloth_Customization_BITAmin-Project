@@ -1,7 +1,8 @@
 # cloth_customization
 BITAmin project (Recommendation System)
 
-### 👚 오늘 뭐입지?! 👕
+### INTRO
+👚 오늘 뭐입지?! 👕
 
 💬 : 🚨 설마 너 지금.. 그렇게 입고 나가게? 🚨
 

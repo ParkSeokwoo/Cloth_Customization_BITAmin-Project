@@ -35,6 +35,8 @@
 
 ---
 
+### RESULT
+
 결과물은 streamlit 앱으로 구현하였으며, 구현 영상은 아래에 첨부해두었다.
 
 https://github.com/baesunny/cloth_customization/assets/133308712/0329369e-e4b7-4f10-bdeb-af3c13818302

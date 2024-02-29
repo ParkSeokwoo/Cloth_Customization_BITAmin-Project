@@ -1,4 +1,4 @@
-# BITAmin project #01. Recommendation System
+# BITAmin Project #01. Recommendation System
 
 - 분야: 추천시스템, CV
 - 주제: 입력한 옷과 TPO를 고려한 의류추천
@@ -16,7 +16,9 @@
 무신사와 온더룩의 패셔니스타들의 코디를 지금 바로 참고해보세요!
 
 ![fashionista](https://github.com/baesunny/cloth_customization/assets/133308712/7032a36c-105f-404a-8a3f-6cfde1973f0b)
+(이미지 출처: https://onthelook.co.kr/)
 
+---
 
 ### PROCESS
 

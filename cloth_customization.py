@@ -1,16 +1,6 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# In[9]:
-
-
 import streamlit as st
-from PIL import Image, UnidentifiedImageError
-import requests
-import matplotlib.pyplot as plt
+from PIL import Image
 import torch.nn as nn
-from pylab import imshow
-import matplotlib as mpl
 import numpy as np
 import torch
 import cv2
@@ -27,57 +17,97 @@ processor_obj = AutoImageProcessor.from_pretrained("facebook/detr-resnet-50")
 model_obj = DetrForObjectDetection.from_pretrained("facebook/detr-resnet-50")
 
 
+def center_image(image_path,width=700):
+    st.markdown(
+        f'<style>img {{ display: block; margin-left: auto; margin-right: auto; }} </style>',
+        unsafe_allow_html=True
+    )
+    st.image(image_path,width = width)
+
 
 ### INTRO ###
 st.header('👚 오늘 뭐입지?! 👕')
-st.markdown('🚨 **설마 너 지금.. 그렇게 입고 나가게?** 🚨')
+st.markdown('💬 : 🚨 **설마 너 지금.. 그렇게 입고 나가게?** 🚨')
 st.markdown(' **패션센스가 2% 부족한 당신을 위해 준비했습니다!** 사진 이미지만 입력하면, 요즘 트렌디한 스타일과 여러분의 TPO를 고려하여 코디를 추천해드립니다. 무신사와 온더룩의 패셔니스타들의 코디를 지금 바로 참고해보세요! ')
-st.image('./intro_img/fashionista.jpg')
+center_image('./intro_img/fashionista.jpg')
 
 st.markdown('--------------------------------------------------------------------------------------')
-st.header('PROCESS')
-st.image('./intro_img/process.png')
+st.subheader('PROCESS')
+center_image('./intro_img/process.png')
 st.markdown('--------------------------------------------------------------------------------------')
 
 
+## INPUT ###
+st.subheader(' ✅ 의류 이미지 업로드 ')
+input_image = st.file_uploader(" **의류 이미지를 업로드하세요. (배경이 깔끔한 사진이라면 더 좋습니다!)** ", type=['png', 'jpg', 'jpeg'])
+if not input_image :
+        con = st.container()
+        st.stop()
+center_image(input_image,400)
+st.markdown('--------------------------------------------------------------------------------------')
 
-### INPUT ###
-# # 의류 이미지 업로드
-# input_image = st.file_uploader("의류 이미지를 업로드하세요. (배경이 깔끔한 사진이라면 더 좋습니다!)", type=['png', 'jpg', 'jpeg'])
-# # 입력받은 의류 이미지 카테고리 선택
-# input_cat = st.selectbox(
-#     '귀하가 업로드한 의류 이미지의 카테고리를 골라주세요.',
-#     ('top', 'bottom', 'shoes', 'hat', 'sunglasses', 'scarf', 'bag', 'belt'))
-# st.write('You selected:', input)
-# # 추천받고 싶은 의류 카테고리 선택
-# output_cat = st.selectbox(
-#     '추천받고 싶은 의류 카테고리를 선택해주세요.',
-#     ('top', 'bottom', 'shoes', 'hat', 'sunglasses', 'scarf', 'belt'))
-# if input == output:
-#     st.error('Error: 업로드한 의류 카테고리와 다른 카테고리를 선택해주세요.')
-# st.write('You selected:', output)
-# # 상황 카테고리 선택
-# situation = st.checkbox(
-#     '상황 카테고리를 선택해주세요.',
-#     ('여행', '카페', '전시회', '캠퍼스&출근', '급추위', '운동'))
-# st.write('You selected:', situation)
-# # 선택된 상황 카테고리를 영어로 변환해서 변수 저장
-# situation_mapping = {
-#     '여행': 'travel',
-#     '카페': 'cafe',
-#     '전시회': 'exhibit',
-#     '캠퍼스&출근': 'campus_work',
-#     '급추위': 'cold',
-#     '운동': 'exercise'}
-# situation = [situation_mapping[item] for item in situation]
+st.subheader(' ✅ 업로드한 의류 이미지 카테고리 선택 ')
+input_cat = st.radio(
+    "**귀하가 업로드한 의류 이미지의 카테고리를 골라주세요.**",
+    ['top👕', 'bottom👖', 'shoes👞', 'hat🧢', 'sunglasses🕶️', 'scarf🧣', 'bag👜'],
+    index=None,
+    horizontal = True)
 
 
-# 임시로 변수 정의
-input_image = './example_top.jpg'
-input_cat = 'top'
-output_cat = 'bottom'
-situation = 'travel'
+if not input_cat :
+        con = st.container()
+        st.stop()
+input_cat = input_cat[:-1]
+st.write('You selected:', input_cat)
+st.markdown('--------------------------------------------------------------------------------------')
 
+st.subheader(' ✅ 추천받고 싶은 의류 카테고리 선택 ')
+output_cat = st.radio(
+    '**추천받고 싶은 의류 카테고리를 선택해주세요.**',
+    ['top👕', 'bottom👖', 'shoes👞', 'hat🧢', 'sunglasses🕶️', 'scarf🧣', 'bag👜'],
+    index=None,
+    horizontal = True)
+
+if not output_cat :
+        con = st.container()
+        st.write('🚫 주의: 업로드한 의류 카테고리와 다른 카테고리를 선택해주세요.')
+        st.stop()
+output_cat = output_cat[:-1]
+st.write('You selected:', output_cat)
+st.write(' ')
+st.markdown('--------------------------------------------------------------------------------------')
+
+
+st.subheader(' ✅ 상황 카테고리 선택 ')
+situation = st.radio(
+    "**상황 카테고리를 선택해주세요.**",
+    ['여행🌊', '카페☕️', '전시회🖼️', '캠퍼스🏫 & 출근💼', '급추위🤧', '운동💪'],
+    captions = ['(바다,여행)','(카페, 데일리)','(데이트, 결혼식)','','',''],
+    index=None,
+    horizontal = True)
+
+# 선택된 상황 카테고리를 영어로 변환해서 변수 저장
+situation_mapping = {
+    '여행🌊': 'travel',
+    '카페☕️': 'cafe',
+    '전시회🖼️': 'exhibit',
+    '캠퍼스🏫 & 출근💼': 'campus_work',
+    '급추위🤧': 'cold',
+    '운동💪': 'exercise'}
+
+if not situation:
+        con = st.container()
+        st.stop()
+situation= situation_mapping[situation]
+st.write('You selected:', situation)
+
+## 변수 명
+# input_img
+# input_cat : 입은 옷 카테고리
+# output_cat  : 추천 받을 카테고리
+# situation : 상황
+
+st.markdown('--------------------------------------------------------------------------------------')
 
 
 ### 입력받은 이미지 segmentation & detection & vector변환 ###
@@ -218,9 +248,6 @@ def final_image(image):
 # 입력받은 이미지 전처리 완료
 input_img = final_image(image)
 
-
-
-
 ### 유사도 분석 ###
 # 하나는 이미지, 다른 하나는 경로로 받는 경우
 def cosine_similarity(vec1, vec2_path):
@@ -230,6 +257,7 @@ def cosine_similarity(vec1, vec2_path):
     norm_vec2 = np.linalg.norm(vec2)
     similarity = dot_product / (norm_vec1 * norm_vec2)   
     return similarity
+
 # 둘 다 경로로 받는 경우
 def cosine_similarity_2(vec1_path, vec2_path):
     vec1 = np.loadtxt(vec1_path)
@@ -240,73 +268,70 @@ def cosine_similarity_2(vec1_path, vec2_path):
     similarity = dot_product / (norm_vec1 * norm_vec2)
     return similarity
 
-# 입력받은 이미지 & 동일 카테고리 폴더에 저장된 스타일 이미지
-sim_list = []
-file_path = './style/' + situation + '/' + input_cat + '/'   # ex) './cafe/top/'
-cloths = os.listdir('./style/' + situation + '/' + input_cat + '/')
-for cloth in cloths:
-    sim_list.append(cosine_similarity(input_img, file_path + cloth))
-max_idx = np.argmax(sim_list)
-cloths[max_idx]
-# target_image 정의
-target_image = './style/' + situation + '/' + output_cat + '/' + cloths[max_idx]
-# 유사도 분석 완료된 스타일seg 이미지와 product_seg 유사도분석
-sim_list = []
-file_path = './product/' + output_cat + '/'
-cloths = os.listdir('./product/' + output_cat + '/')
-for cloth in cloths:
-    sim_list.append(cosine_similarity_2(target_image, file_path + cloth))
-max_idx = np.argmax(sim_list)
-cloths[max_idx]
-## 예시 출력값: 'bottom_1883.txt'
+with st.spinner('Wait for it...'):
+    # 입력받은 이미지 & 동일 카테고리 폴더에 저장된 스타일 이미지
+    sim_list = []
+    file_path = './style/' + situation + '/' + input_cat + '/'   # ex) './cafe/top/'
+    cloths = os.listdir('./style/' + situation + '/' + input_cat + '/')
+    for cloth in cloths:
+        sim_list.append(cosine_similarity(input_img, file_path + cloth))
+    max_idx = np.argmax(sim_list)
 
+    # target_image 정의
+    target_image = './style/' + situation + '/' + output_cat + '/' + cloths[max_idx]
+    # 유사도 분석 완료된 스타일seg 이미지와 product_seg 유사도분석
+    sim_list = []
+    file_path = './product/' + output_cat + '/'
+    cloths = os.listdir('./product/' + output_cat + '/')
+    for cloth in cloths:
+        sim_list.append(cosine_similarity_2(target_image, file_path + cloth))
+    max_idx = np.argmax(sim_list)
+    output_name  = cloths[max_idx]
+    ## 예시 출력값: 'bottom_1883.txt'
 
-# 최종 이미지 출력
+    # name 로드
+    acc_name = pd.read_csv('acc_name.csv')
+    bottom_name =pd.read_csv('bottom_name.csv')
+    outer_name =pd.read_csv('outer_name.csv')
+    shoes_name =pd.read_csv('shoes_name.csv')
+    top_name =pd.read_csv('top_name.csv')
 
+    #상품 데이터 로드
+    outer = pd.read_csv('outer.csv')
+    top = pd.read_csv('top.csv')
+    bottom = pd.read_csv('bottom.csv')
+    shoes = pd.read_csv('shoes.csv')
+    acc = pd.read_csv('acc.csv')
 
-# In[6]:
+    if output_cat == 'bottom':
+        df = bottom.copy()
+        df_name = bottom_name.copy()
+    elif output_cat == 'top':
+        df = top.copy()
+        df_name = top_name.copy()
+    elif output_cat == 'shoes':
+        df = shoes.copy()
+        df_name = shoes_name.copy()
+    elif (output_cat == 'hat') or (output_cat == 'sunglasses') or (output_cat == 'scarf') or (output_cat == 'bag') or (output_cat == 'belt'):
+        df = acc.copy()
+        df_name = acc_name.copy()
 
+    output_name = output_name.split('.')[0]
+    file_name = df_name[df_name['index']==output_name].iloc[0,1] #3049906_16754112975667_500.jpg
+    final = df[df['id'] == file_name]
 
-# input_image = './example_top.jpg'
-# input_cat = 'top'
-# output_cat = 'bottom'
-# situation = 'travel'
+    name = final['name'].values[0].split('\n')[-1] # 상품명
+    price = final['price'].values[0] # 상품가격
 
+image_path = './product/img/'
 
-# In[20]:
+st.subheader('OUTPUT')
 
+img = Image.open(image_path+output_cat+'/'+file_name)
 
-# # 해당 url 찾기
-# with open('cafe_urls.txt', 'r') as file:
-#     urls = file.readlines()
-    
-# urls[987]
-
-
-# #### .txt 파일로 변환
-
-# In[21]:
-
-
-# file_names = os.listdir('../product/bottom_seg')
-# file_path = '../product/bottom_seg'
-# for name in file_names:
-#     src = os.path.join(file_path, name)
-#     dst = name + '.txt'
-#     dst = os.path.join(file_path, dst)
-#     os.rename(src, dst)
-
-
-# #### 압축해제
-
-# In[22]:
-
-
-# # Open the zip file
-# zip_file_path = '../product/bottom_seg-20240222T170613Z-001.zip'
-# extract_dir = '../product'
-
-# with zipfile.ZipFile(zip_file_path, 'r') as zip_ref:
-#     # Extract all the contents into the specified directory
-#     zip_ref.extractall(extract_dir)
-
+col1, col2, col3 = st.columns(3)
+with col1:
+    st.image(img,width=400)
+with col3:
+    st.caption('상풍명 : ' + name)
+    st.caption('가격 : ' + price)

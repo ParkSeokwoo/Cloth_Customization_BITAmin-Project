@@ -37,7 +37,7 @@
 
 ### RESULT
 
-결과물은 streamlit 앱으로 구현하였으며, 발표자료와 구현영상과 은 아래에 첨부해두었다.
+결과물은 streamlit 앱으로 구현하였으며, 발표자료와 구현영상은 아래에 첨부해두었다.
 
 - 발표자료
 [오늘 뭐입지.pdf](https://github.com/baesunny/cloth_customization/files/14444764/default.pdf)
